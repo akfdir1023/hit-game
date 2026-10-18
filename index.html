@@ -2,296 +2,592 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>신희준 때리기</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>신희준 때리기: 레전드 키우기</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        body { 
-            margin: 0; padding: 0; 
-            display: flex; flex-direction: column; align-items: center; 
-            background-color: #f4f4f9; font-family: 'Pretendard', 'Malgun Gothic', sans-serif; 
-            /* 모바일에서 더블 탭 확대 방지 */
-            touch-action: manipulation; 
-        }
-        h2 { margin-top: 20px; color: #333; text-align: center; }
-        
-        #game-container { 
-            position: relative; width: 100%; max-width: 400px; 
-            text-align: center; margin-top: 10px; 
-        }
-        
-        #photo-container { 
-            position: relative; width: 85%; max-width: 320px; aspect-ratio: 3/4;
-            margin: 0 auto; overflow: hidden; border-radius: 20px; 
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2); cursor: pointer; 
-            background: #ddd; display: flex; align-items: center; justify-content: center; 
-            /* 모바일 드래그 방지 */
-            -webkit-user-drag: none; user-select: none;
-        }
-        
-        #target-photo { 
-            width: 100%; height: 100%; object-fit: cover; pointer-events: none; 
-        }
-        
-        .error-text { 
-            position: absolute; color: #d32f2f; font-weight: bold; 
-            font-size: 1.1rem; display: none; text-align: center; padding: 20px;
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #0f172a;
+            color: white;
+            overflow: hidden;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+            transition: background-color 0.3s;
         }
 
-        #ui-panel { 
-            margin-top: 20px; width: 90%; max-width: 400px; 
-            background: white; padding: 15px; border-radius: 15px; 
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1); box-sizing: border-box;
+        /* Fever Time Background */
+        body.fever-active {
+            animation: feverBgPulse 1s infinite alternate;
+        }
+        @keyframes feverBgPulse {
+            0% { background-color: #450a0a; }
+            100% { background-color: #7f1d1d; }
         }
 
-        .level-text { font-size: 1.3rem; font-weight: bold; margin: 0 0 10px 0; color: #1976d2; }
+        .title-font { font-family: 'Black Han Sans', sans-serif; }
+
+        /* Animations */
+        @keyframes shake {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(-5px, 5px) rotate(-2deg); }
+            50% { transform: translate(5px, -5px) rotate(2deg); }
+            75% { transform: translate(-5px, -5px) rotate(-2deg); }
+        }
+        @keyframes shakeHeavy {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            20% { transform: translate(-15px, 15px) rotate(-5deg) scale(0.9); }
+            40% { transform: translate(15px, -15px) rotate(5deg) scale(1.1); }
+            60% { transform: translate(-15px, -15px) rotate(-5deg) scale(0.9); }
+            80% { transform: translate(15px, 15px) rotate(5deg) scale(1.1); }
+        }
+        .shake-active { animation: shake 0.1s cubic-bezier(.36,.07,.19,.97) both; }
+        .shake-heavy { animation: shakeHeavy 0.25s cubic-bezier(.36,.07,.19,.97) both; }
+
+        /* Floating Text Effects */
+        @keyframes floatDamage {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
+            50% { transform: translate(-50%, -120%) scale(1.2); opacity: 1; }
+            100% { transform: translate(-50%, -180%) scale(1); opacity: 0; }
+        }
+        @keyframes floatResource {
+            0% { transform: translate(0, 0) scale(0.8); opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(1.2); opacity: 0; }
+        }
+        .dmg-text {
+            position: absolute; pointer-events: none;
+            animation: floatDamage 0.6s ease-out forwards;
+            font-family: 'Black Han Sans', sans-serif; z-index: 60;
+            text-shadow: 2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000;
+        }
+        .res-text {
+            position: absolute; pointer-events: none; font-weight: 900; z-index: 55;
+            animation: floatResource 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            text-shadow: 1px 1px 2px #000;
+        }
+
+        /* Target Area */
+        #targetArea { touch-action: none; }
+        #faceContainer {
+            transition: transform 0.05s ease-out;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+        .fever-active #faceContainer {
+            box-shadow: 0 0 50px #ef4444, 0 0 100px #f59e0b;
+            border-color: #facc15;
+            animation: pulseTarget 0.5s infinite alternate;
+        }
+        @keyframes pulseTarget {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.05); }
+        }
+
+        /* Tabs & Buttons */
+        .tab-btn { transition: all 0.2s; }
+        .tab-btn.active { background-color: #3b82f6; color: white; border-bottom: 2px solid #60a5fa; }
+        .tab-content { display: none; overflow-y: auto; height: 100%; }
+        .tab-content.active { display: block; }
         
-        .bar-bg { 
-            width: 100%; height: 20px; background: #eee; 
-            border-radius: 10px; overflow: hidden; margin: 5px 0 15px 0; 
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+        .upgrade-btn { transition: transform 0.1s, filter 0.1s; }
+        .upgrade-btn:active:not(:disabled) { transform: scale(0.95); }
+        .upgrade-btn:disabled { filter: grayscale(100%); opacity: 0.5; cursor: not-allowed; }
+
+        .weapon-btn { transition: all 0.2s; position: relative; overflow: hidden; }
+        .weapon-btn.locked { filter: grayscale(100%) brightness(0.4); pointer-events: none; }
+        .weapon-btn.locked::after { content: '🔒'; position: absolute; font-size: 1.5rem; z-index: 10; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        .weapon-btn.active { border-color: #facc15; background-color: rgba(250, 204, 21, 0.2); box-shadow: 0 0 15px rgba(250, 204, 21, 0.5); transform: scale(1.05); }
+
+        /* Progress Bars */
+        .progress-striped {
+            background-image: linear-gradient(45deg, rgba(255,255,255,.15) 25%, transparent 25%, transparent 50%, rgba(255,255,255,.15) 50%, rgba(255,255,255,.15) 75%, transparent 75%, transparent);
+            background-size: 1rem 1rem; animation: progress-stripes 1s linear infinite;
         }
-        #exp-bar { 
-            width: 0%; height: 100%; background: linear-gradient(90deg, #4caf50, #8bc34a); 
-            transition: width 0.3s ease-out; 
-        }
-        
-        .weapon-grid {
-            display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
-        }
-        .weapon-btn { 
-            padding: 12px 10px; border: none; border-radius: 10px; 
-            cursor: pointer; font-size: 15px; font-weight: bold; 
-            transition: all 0.2s; background: #e0e0e0; color: #9e9e9e; 
-            display: flex; flex-direction: column; align-items: center;
-        }
-        .weapon-btn.unlocked { background: #ffb74d; color: #fff; box-shadow: 0 4px 0 #f57c00; }
-        .weapon-btn.unlocked:active { transform: translateY(4px); box-shadow: 0 0 0 #f57c00; }
-        .weapon-btn.active { background: #e65100; color: white; box-shadow: 0 4px 0 #bf360c; outline: 3px solid #ffcc80; }
-        
-        /* 타격 이펙트 애니메이션 */
-        .hit-effect { 
-            position: absolute; font-size: 2.5rem; font-weight: 900; 
-            color: #fff; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000, 3px 3px 0 #f44336; 
-            pointer-events: none; animation: popUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; 
-            z-index: 10;
-        }
-        @keyframes popUp { 
-            0% { transform: scale(0.5) translate(-50%, -50%) rotate(-10deg); opacity: 1; } 
-            50% { transform: scale(1.5) translate(-50%, -100%) rotate(10deg); opacity: 1; }
-            100% { transform: scale(1) translate(-50%, -150%) rotate(0deg); opacity: 0; } 
-        }
-        
-        /* 흔들림 효과 */
-        .shake { animation: shakeAnim 0.15s; }
-        .shake-heavy { animation: shakeHeavyAnim 0.3s; }
-        @keyframes shakeAnim { 
-            0% { transform: translate(0, 0); } 
-            25% { transform: translate(-8px, 4px); } 
-            50% { transform: translate(8px, -4px); } 
-            75% { transform: translate(-8px, -4px); } 
-            100% { transform: translate(0, 0); } 
-        }
-        @keyframes shakeHeavyAnim { 
-            0% { transform: translate(0, 0) scale(1); filter: brightness(1); } 
-            20% { transform: translate(-15px, 10px) scale(0.95); filter: brightness(1.5) invert(0.2); } 
-            40% { transform: translate(15px, -10px) scale(1.05); filter: brightness(0.8) invert(0.5); } 
-            60% { transform: translate(-15px, -10px) scale(0.95); filter: brightness(1.2); } 
-            80% { transform: translate(15px, 10px) scale(1.05); } 
-            100% { transform: translate(0, 0) scale(1); filter: brightness(1); } 
-        }
+        @keyframes progress-stripes { from { background-position: 1rem 0; } to { background-position: 0 0; } }
+
+        /* Custom Scrollbar for lists */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
     </style>
 </head>
-<body>
+<body class="flex flex-col items-center h-[100dvh] w-full relative" id="gameBody">
 
-    <h2>신희준 때리기 레벨업!</h2>
-    
-    <div id="game-container">
-        <!-- ⭐️ 이미지를 클릭하면 타격 이벤트 발생 -->
-        <div id="photo-container" onpointerdown="hit(event)">
-            <span class="error-text" id="error-msg">사진을 불러올 수 없습니다<br><br><small>20260701_125816.jpg 파일이<br>깃허브에 있는지 확인하세요</small></span>
-            <!-- ⭐️ 깃허브에 올린 파일명과 일치시켰습니다 -->
-            <img id="target-photo" src="20260701_125816.jpg" alt="신희준 타겟 이미지" onerror="handleImageError()">
+    <!-- Header Stats -->
+    <header class="w-full max-w-md p-4 z-30 pt-6 shrink-0 flex flex-col gap-3 bg-slate-900/80 backdrop-blur-md rounded-b-2xl border-b border-slate-700 shadow-lg">
+        <div class="flex justify-between items-center w-full">
+            <h1 class="title-font text-2xl md:text-3xl text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 drop-shadow-md">레전드 키우기</h1>
+            <div class="flex items-center gap-2 bg-slate-800 px-3 py-1 rounded-full border border-yellow-500/50">
+                <span class="text-xl">💰</span>
+                <span id="goldText" class="title-font text-yellow-400 text-lg md:text-xl font-bold">0</span>
+            </div>
         </div>
-    </div>
-
-    <div id="ui-panel">
-        <p class="level-text">🏆 Level: <span id="level-display">1</span></p>
-        <div class="bar-bg"><div id="exp-bar"></div></div>
-        <p style="margin: 0 0 15px 0; font-size: 0.9rem; color: #555;">EXP: <span id="exp-display">0</span> / <span id="max-exp-display">10</span></p>
         
-        <div class="weapon-grid">
-            <button class="weapon-btn unlocked active" id="w1" onclick="selectWeapon(1, '맨손', 1)">
-                <span style="font-size: 24px;">🖐️</span> 맨손 (기본)
+        <!-- EXP Bar -->
+        <div class="w-full">
+            <div class="flex justify-between items-end mb-1">
+                <span class="text-cyan-400 title-font text-xl drop-shadow-md">LV <span id="levelText">1</span></span>
+                <span class="text-slate-300 text-xs md:text-sm font-bold">EXP <span id="expText">0 / 20</span></span>
+            </div>
+            <div class="w-full h-4 bg-slate-800 rounded-full overflow-hidden border border-slate-600 relative">
+                <div id="expBar" class="h-full bg-gradient-to-r from-cyan-500 to-blue-500 transition-all duration-300 w-0"></div>
+            </div>
+        </div>
+
+        <!-- DPS & Click Power Info -->
+        <div class="flex justify-between text-xs md:text-sm text-slate-400 font-bold px-1">
+            <span>클릭 파워: <span id="clickPowerText" class="text-white">1</span></span>
+            <span>자동 공격: <span id="autoPowerText" class="text-white">0</span> / 초</span>
+        </div>
+    </header>
+
+    <!-- Main Game Area -->
+    <main class="flex-1 w-full max-w-md flex flex-col items-center justify-center relative z-20 px-4 py-2 min-h-0">
+        
+        <!-- Fever / Combo Bar -->
+        <div class="w-full max-w-[280px] mb-4">
+            <div class="flex justify-between text-xs font-bold mb-1 px-1">
+                <span id="comboLabel" class="text-orange-400">COMBO</span>
+                <span id="comboMultiplier" class="text-yellow-400 hidden animate-pulse">FEVER x3!</span>
+            </div>
+            <div class="w-full h-3 bg-slate-800 rounded-full overflow-hidden border border-slate-700 shadow-inner">
+                <div id="comboBar" class="h-full bg-gradient-to-r from-orange-500 to-red-500 w-0 transition-all duration-[50ms]"></div>
+            </div>
+        </div>
+
+        <!-- Target Face Area -->
+        <div class="relative w-full max-w-[240px] md:max-w-[280px] aspect-square cursor-crosshair select-none" id="targetArea">
+            <div id="faceContainer" class="w-full h-full rounded-full overflow-hidden border-4 border-slate-600 relative bg-slate-800 flex items-center justify-center pointer-events-none">
+                
+                <div id="imageFallback" class="absolute inset-0 flex items-center justify-center text-center p-4 z-10 hidden bg-slate-800">
+                    <p class="text-sm md:text-base text-red-400 font-bold break-keep">
+                        20260701_125816.jpg 파일을 찾을 수 없습니다
+                    </p>
+                </div>
+
+                <img id="targetImage" src="20260701_125816.jpg" alt="타겟" class="absolute inset-0 w-full h-full object-cover select-none pointer-events-none z-20">
+                <div id="hitFlash" class="absolute inset-0 bg-white opacity-0 pointer-events-none transition-opacity duration-100 z-30 mix-blend-overlay"></div>
+            </div>
+            <div id="fxContainer" class="absolute inset-0 pointer-events-none z-40 overflow-visible"></div>
+        </div>
+        
+    </main>
+
+    <!-- Bottom Tab UI -->
+    <footer class="w-full max-w-md h-[250px] md:h-[300px] z-30 bg-slate-800/95 backdrop-blur-md rounded-t-3xl border-t-2 border-slate-600 flex flex-col shrink-0 shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
+        
+        <!-- Tab Headers -->
+        <div class="flex w-full border-b border-slate-700">
+            <button onclick="switchTab('upgrades')" id="tabBtn-upgrades" class="tab-btn active flex-1 py-3 text-sm md:text-base font-bold text-slate-300 rounded-tl-3xl bg-slate-800/50">
+                🛒 상점 (강화)
             </button>
-            <button class="weapon-btn" id="w2" onclick="selectWeapon(2, '권투글러브', 3)">
-                <span style="font-size: 24px;">🥊</span> 글러브 (Lv.2)
-            </button>
-            <button class="weapon-btn" id="w3" onclick="selectWeapon(3, '뿅망치', 6)">
-                <span style="font-size: 24px;">🔨</span> 뿅망치 (Lv.3)
-            </button>
-            <button class="weapon-btn" id="w4" onclick="selectWeapon(4, '프라이팬', 12)">
-                <span style="font-size: 24px;">🍳</span> 프라이팬 (Lv.4)
-            </button>
-            <button class="weapon-btn" id="w5" onclick="selectWeapon(5, '핵꿀밤', 30)" style="grid-column: span 2;">
-                <span style="font-size: 24px;">🔥</span> 궁극기: 핵꿀밤 (Lv.5)
+            <button onclick="switchTab('weapons')" id="tabBtn-weapons" class="tab-btn flex-1 py-3 text-sm md:text-base font-bold text-slate-300 rounded-tr-3xl bg-slate-800/50">
+                🎒 무기 (스킨)
             </button>
         </div>
-    </div>
 
+        <!-- Upgrades Tab Content -->
+        <div id="tab-upgrades" class="tab-content active p-3">
+            <div class="flex flex-col gap-2" id="upgradeList">
+                <!-- Rendered by JS -->
+            </div>
+        </div>
+
+        <!-- Weapons Tab Content -->
+        <div id="tab-weapons" class="tab-content p-3">
+            <p class="text-center text-xs text-slate-400 mb-2">특정 레벨 달성 시 무기가 해금됩니다.</p>
+            <div class="grid grid-cols-3 gap-2" id="weaponGrid">
+                <!-- Rendered by JS -->
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
     <script>
-        let level = 1;
-        let exp = 0;
-        let maxExp = 10;
-        let currentDamage = 1;
-        let activeWeaponId = 1;
+        // --- Core Game State ---
+        let state = {
+            level: 1,
+            exp: 0,
+            maxExp: 20,
+            gold: 0,
+            clickPower: 1,
+            autoPower: 0,
+            currentWeaponId: 1
+        };
 
-        // 브라우저 내장 합성음(사운드) 생성기
+        // --- Combo & Fever State ---
+        let combo = {
+            current: 0,
+            max: 100,
+            feverActive: false,
+            feverTimer: 0,
+            feverDuration: 10, // seconds
+            decayRate: 15, // combo lost per second if not clicked
+            lastClickTime: Date.now()
+        };
+
+        // --- Data Definitions ---
+        const weapons = [
+            { id: 1,  name: '맨손',   reqLevel: 1,  icon: '🖐️', color: '#ef4444', text: '찰싹!', sound: 'slap' },
+            { id: 2,  name: '글러브', reqLevel: 2,  icon: '🥊', color: '#f97316', text: '퍽!!',   sound: 'glove' },
+            { id: 5,  name: '뿅망치', reqLevel: 5,  icon: '🔨', color: '#facc15', text: '뽀용!', sound: 'hammer' },
+            { id: 10, name: '프라이팬',reqLevel: 10, icon: '🍳', color: '#94a3b8', text: '깡!!!',  sound: 'pan' },
+            { id: 20, name: '핵펀치', reqLevel: 20, icon: '☢️', color: '#dc2626', text: '콰광!!!',sound: 'nuclear' }
+        ];
+
+        let upgrades = [
+            { id: 'c1', type: 'click', name: '손가락 단련', desc: '클릭 파워 +1', baseCost: 10, costMult: 1.5, power: 1, level: 0, icon: '💪' },
+            { id: 'c2', type: 'click', name: '집중 타격', desc: '클릭 파워 +5', baseCost: 100, costMult: 1.6, power: 5, level: 0, icon: '🎯' },
+            { id: 'a1', type: 'auto',  name: '초보 용병', desc: '초당 자동 타격 +1', baseCost: 50, costMult: 1.4, power: 1, level: 0, icon: '🤖' },
+            { id: 'a2', type: 'auto',  name: '닌자 분신', desc: '초당 자동 타격 +10', baseCost: 500, costMult: 1.5, power: 10, level: 0, icon: '🥷' }
+        ];
+
+        // --- DOM Elements ---
+        const ui = {
+            gold: document.getElementById('goldText'),
+            level: document.getElementById('levelText'),
+            exp: document.getElementById('expText'),
+            expBar: document.getElementById('expBar'),
+            clickPower: document.getElementById('clickPowerText'),
+            autoPower: document.getElementById('autoPowerText'),
+            comboBar: document.getElementById('comboBar'),
+            comboLabel: document.getElementById('comboLabel'),
+            comboMult: document.getElementById('comboMultiplier'),
+            body: document.getElementById('gameBody'),
+            targetArea: document.getElementById('targetArea'),
+            faceContainer: document.getElementById('faceContainer'),
+            fxContainer: document.getElementById('fxContainer'),
+            hitFlash: document.getElementById('hitFlash'),
+            targetImage: document.getElementById('targetImage'),
+            imageFallback: document.getElementById('imageFallback'),
+            upgradeList: document.getElementById('upgradeList'),
+            weaponGrid: document.getElementById('weaponGrid')
+        };
+
+        // --- Image Fallback ---
+        ui.targetImage.onerror = () => {
+            ui.targetImage.style.display = 'none';
+            ui.imageFallback.classList.remove('hidden');
+        };
+
+        // --- Audio System ---
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         let audioCtx;
-
+        
         function initAudio() {
             if (!audioCtx) audioCtx = new AudioContext();
             if (audioCtx.state === 'suspended') audioCtx.resume();
         }
 
         function playSound(type) {
-            initAudio();
+            if (!audioCtx) return;
+            const t = audioCtx.currentTime;
             const osc = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
-            osc.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
+            const gain = audioCtx.createGain();
             
-            const now = audioCtx.currentTime;
-            
-            if (type === 1) { // 맨손 (찰싹!)
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            if (type === 'slap') {
                 osc.type = 'triangle';
-                osc.frequency.setValueAtTime(600, now);
-                osc.frequency.exponentialRampToValueAtTime(100, now + 0.1);
-                gainNode.gain.setValueAtTime(1, now);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
-                osc.start(now); osc.stop(now + 0.1);
-            } else if (type === 2) { // 글러브 (퍽!)
+                osc.frequency.setValueAtTime(800, t); osc.frequency.exponentialRampToValueAtTime(100, t + 0.1);
+                gain.gain.setValueAtTime(0.5, t); gain.gain.exponentialRampToValueAtTime(0.01, t + 0.1);
+                osc.start(t); osc.stop(t + 0.1);
+            } else if (type === 'glove') {
                 osc.type = 'sine';
-                osc.frequency.setValueAtTime(200, now);
-                osc.frequency.exponentialRampToValueAtTime(40, now + 0.2);
-                gainNode.gain.setValueAtTime(1.5, now);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
-                osc.start(now); osc.stop(now + 0.2);
-            } else if (type === 3) { // 뿅망치 (뽀용!)
+                osc.frequency.setValueAtTime(150, t); osc.frequency.exponentialRampToValueAtTime(50, t + 0.15);
+                gain.gain.setValueAtTime(1, t); gain.gain.exponentialRampToValueAtTime(0.01, t + 0.15);
+                osc.start(t); osc.stop(t + 0.15);
+            } else if (type === 'hammer') {
                 osc.type = 'square';
-                osc.frequency.setValueAtTime(400, now);
-                osc.frequency.linearRampToValueAtTime(1200, now + 0.15);
-                gainNode.gain.setValueAtTime(0.5, now);
-                gainNode.gain.linearRampToValueAtTime(0.01, now + 0.15);
-                osc.start(now); osc.stop(now + 0.15);
-            } else if (type === 4) { // 프라이팬 (깡!)
+                osc.frequency.setValueAtTime(400, t); osc.frequency.linearRampToValueAtTime(800, t + 0.05); osc.frequency.linearRampToValueAtTime(300, t + 0.15);
+                gain.gain.setValueAtTime(0.4, t); gain.gain.linearRampToValueAtTime(0.6, t + 0.05); gain.gain.exponentialRampToValueAtTime(0.01, t + 0.2);
+                osc.start(t); osc.stop(t + 0.2);
+            } else if (type === 'pan') {
                 osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(1200, now);
-                osc.frequency.exponentialRampToValueAtTime(300, now + 0.25);
-                gainNode.gain.setValueAtTime(1, now);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
-                osc.start(now); osc.stop(now + 0.25);
-            } else { // 핵꿀밤 (콰광!)
+                osc.frequency.setValueAtTime(1000, t); osc.frequency.exponentialRampToValueAtTime(200, t + 0.3);
+                gain.gain.setValueAtTime(0.8, t); gain.gain.exponentialRampToValueAtTime(0.01, t + 0.4);
+                osc.start(t); osc.stop(t + 0.4);
+            } else if (type === 'nuclear') {
                 osc.type = 'square';
-                osc.frequency.setValueAtTime(100, now);
-                osc.frequency.exponentialRampToValueAtTime(20, now + 0.5);
-                gainNode.gain.setValueAtTime(2, now);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
-                osc.start(now); osc.stop(now + 0.5);
+                osc.frequency.setValueAtTime(100, t); osc.frequency.exponentialRampToValueAtTime(10, t + 0.8);
+                gain.gain.setValueAtTime(1.5, t); gain.gain.exponentialRampToValueAtTime(0.01, t + 0.8);
+                osc.start(t); osc.stop(t + 0.8);
             }
         }
 
-        function handleImageError() {
-            document.getElementById('target-photo').style.display = 'none';
-            document.getElementById('error-msg').style.display = 'block';
+        // --- Core Logic ---
+        
+        function getCost(upgrade) {
+            return Math.floor(upgrade.baseCost * Math.pow(upgrade.costMult, upgrade.level));
+        }
+
+        function renderUpgrades() {
+            ui.upgradeList.innerHTML = '';
+            upgrades.forEach(u => {
+                const cost = getCost(u);
+                const canAfford = state.gold >= cost;
+                const btn = document.createElement('button');
+                btn.className = `upgrade-btn flex items-center justify-between p-2 md:p-3 rounded-xl border-2 ${canAfford ? 'bg-slate-700 border-slate-500 hover:border-blue-400' : 'bg-slate-800 border-slate-700'}`;
+                btn.disabled = !canAfford;
+                btn.onclick = () => buyUpgrade(u.id);
+                
+                btn.innerHTML = `
+                    <div class="flex items-center gap-3 text-left">
+                        <div class="text-3xl">${u.icon}</div>
+                        <div>
+                            <div class="font-bold text-sm md:text-base text-slate-100">${u.name} <span class="text-xs text-blue-400 ml-1">Lv.${u.level}</span></div>
+                            <div class="text-xs text-slate-400">${u.desc}</div>
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-end">
+                        <div class="font-bold text-yellow-400 flex items-center gap-1 text-sm md:text-base">
+                            <span>💰</span> ${cost}
+                        </div>
+                        <div class="text-[10px] text-slate-500">구매하기</div>
+                    </div>
+                `;
+                ui.upgradeList.appendChild(btn);
+            });
+        }
+
+        function renderWeapons() {
+            ui.weaponGrid.innerHTML = '';
+            weapons.forEach(w => {
+                const isUnlocked = state.level >= w.reqLevel;
+                const isActive = state.currentWeaponId === w.id;
+                
+                const btn = document.createElement('button');
+                btn.className = `weapon-btn flex flex-col items-center justify-center p-3 rounded-xl border-2 border-slate-600 ${!isUnlocked ? 'locked bg-slate-800' : 'bg-slate-700'} ${isActive ? 'active' : ''}`;
+                btn.onclick = () => selectWeapon(w.id);
+                
+                btn.innerHTML = `
+                    <span class="text-3xl mb-1 drop-shadow-md">${w.icon}</span>
+                    <span class="text-xs font-bold text-slate-200">${w.name}</span>
+                    <span class="text-[10px] ${isUnlocked ? 'text-cyan-400' : 'text-slate-500'} mt-1">Lv.${w.reqLevel} 해금</span>
+                `;
+                ui.weaponGrid.appendChild(btn);
+            });
         }
 
         function updateUI() {
-            document.getElementById('level-display').innerText = level;
-            document.getElementById('exp-display').innerText = exp;
-            document.getElementById('max-exp-display').innerText = maxExp;
-            document.getElementById('exp-bar').style.width = (exp / maxExp * 100) + '%';
-
-            // 레벨에 따른 무기 해금
-            if(level >= 2) document.getElementById('w2').classList.add('unlocked');
-            if(level >= 3) document.getElementById('w3').classList.add('unlocked');
-            if(level >= 4) document.getElementById('w4').classList.add('unlocked');
-            if(level >= 5) document.getElementById('w5').classList.add('unlocked');
-        }
-
-        function selectWeapon(reqLevel, name, damage) {
-            if (level < reqLevel) {
-                alert(`레벨 ${reqLevel}에 도달해야 잠금이 해제됩니다!`);
-                return;
-            }
-            currentDamage = damage;
-            activeWeaponId = reqLevel;
-
-            document.querySelectorAll('.weapon-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById('w' + reqLevel).classList.add('active');
-        }
-
-        function hit(e) {
-            initAudio(); // 첫 터치 시 오디오 활성화
-            playSound(activeWeaponId);
-
-            // 경험치 증가 로직
-            exp += currentDamage;
-            if (exp >= maxExp) {
-                level++;
-                exp = exp - maxExp; // 초과된 경험치 이월
-                maxExp = Math.floor(maxExp * 1.6); // 다음 레벨 필요 경험치 증가
-                
-                // 레벨업 축하 효과
-                setTimeout(() => alert(`🎉 축하합니다! 레벨 ${level} 달성! 새로운 무기를 확인해보세요.`), 100);
-            }
-            updateUI();
-
-            // 사진 흔들림 효과 (무기에 따라 흔들림 강도 다름)
-            const container = document.getElementById('photo-container');
-            container.classList.remove('shake', 'shake-heavy');
-            void container.offsetWidth; // 애니메이션 리셋 트릭
+            ui.gold.innerText = state.gold.toLocaleString();
+            ui.level.innerText = state.level;
+            ui.exp.innerText = `${Math.floor(state.exp)} / ${state.maxExp}`;
+            ui.expBar.style.width = `${Math.min(100, (state.exp / state.maxExp) * 100)}%`;
+            ui.clickPower.innerText = state.clickPower.toLocaleString();
+            ui.autoPower.innerText = state.autoPower.toLocaleString();
             
-            if (activeWeaponId >= 4) {
-                container.classList.add('shake-heavy');
+            // Fever/Combo UI
+            if (combo.feverActive) {
+                ui.comboBar.style.width = `${(combo.feverTimer / combo.feverDuration) * 100}%`;
+                ui.comboBar.className = 'h-full bg-yellow-400 transition-none';
+                ui.comboMult.classList.remove('hidden');
+                ui.body.classList.add('fever-active');
             } else {
-                container.classList.add('shake');
+                ui.comboBar.style.width = `${(combo.current / combo.max) * 100}%`;
+                ui.comboBar.className = 'h-full bg-gradient-to-r from-orange-500 to-red-500 transition-all duration-[50ms]';
+                ui.comboMult.classList.add('hidden');
+                ui.body.classList.remove('fever-active');
             }
 
-            // 타격 글씨 이펙트 생성
-            const rect = container.getBoundingClientRect();
-            let x = e.clientX - rect.left;
-            let y = e.clientY - rect.top;
-            
-            // 모바일 터치 이벤트 보정
-            if (e.touches && e.touches.length > 0) {
-                x = e.touches[0].clientX - rect.left;
-                y = e.touches[0].clientY - rect.top;
-            }
-
-            const effect = document.createElement('div');
-            effect.className = 'hit-effect';
-            effect.style.left = x + 'px';
-            effect.style.top = y + 'px';
-            
-            // 무기별 타격 텍스트 다르게
-            let hitTexts = [];
-            if(activeWeaponId === 1) hitTexts = ['찰싹!', '짝!'];
-            else if(activeWeaponId === 2) hitTexts = ['퍽!', '팍!'];
-            else if(activeWeaponId === 3) hitTexts = ['뽀용!', '뿅!'];
-            else if(activeWeaponId === 4) hitTexts = ['깡!!', '까앙!'];
-            else hitTexts = ['콰광!!!', '퍼억!!!', '크리티컬!'];
-
-            effect.innerText = hitTexts[Math.floor(Math.random() * hitTexts.length)];
-            
-            container.appendChild(effect);
-            
-            // 이펙트 삭제
-            setTimeout(() => effect.remove(), 600);
+            renderUpgrades(); // Updates button states (disabled/enabled)
         }
 
-        // 초기 세팅
+        function buyUpgrade(id) {
+            const u = upgrades.find(x => x.id === id);
+            const cost = getCost(u);
+            if (state.gold >= cost) {
+                state.gold -= cost;
+                u.level++;
+                if (u.type === 'click') state.clickPower += u.power;
+                if (u.type === 'auto') state.autoPower += u.power;
+                
+                initAudio(); // User interaction
+                updateUI();
+            }
+        }
+
+        function selectWeapon(id) {
+            const w = weapons.find(x => x.id === id);
+            if (state.level >= w.reqLevel) {
+                state.currentWeaponId = id;
+                renderWeapons();
+            }
+        }
+
+        function createFloatingEffect(x, y, type, value, weaponColor) {
+            // Damage/Hit text
+            if(type === 'hit') {
+                const dmgEl = document.createElement('div');
+                dmgEl.className = 'dmg-text text-3xl md:text-4xl';
+                dmgEl.style.left = `${x}px`;
+                dmgEl.style.top = `${y}px`;
+                dmgEl.style.color = weaponColor || '#fff';
+                dmgEl.innerText = value;
+                ui.fxContainer.appendChild(dmgEl);
+                setTimeout(() => dmgEl.remove(), 600);
+            }
+            
+            // Gold drop effect
+            if(type === 'gold' && Math.random() > 0.3) { // 70% chance to show coin visually
+                const coinEl = document.createElement('div');
+                coinEl.className = 'res-text text-yellow-400 text-lg';
+                coinEl.style.left = `${x}px`;
+                coinEl.style.top = `${y}px`;
+                coinEl.style.setProperty('--tx', `${(Math.random()-0.5)*100}px`);
+                coinEl.style.setProperty('--ty', `${-50 - Math.random()*50}px`);
+                coinEl.innerText = `+${value} 💰`;
+                ui.fxContainer.appendChild(coinEl);
+                setTimeout(() => coinEl.remove(), 800);
+            }
+        }
+
+        function applyHit(isAuto = false, clientX = 0, clientY = 0) {
+            const weapon = weapons.find(w => w.id === state.currentWeaponId);
+            const multiplier = combo.feverActive ? 3 : 1;
+            
+            let power = isAuto ? state.autoPower : state.clickPower;
+            if (power <= 0) return;
+
+            const finalDamage = power * multiplier;
+            
+            // Resource Gain (1 Damage = 1 Gold & 1 EXP)
+            state.gold += finalDamage;
+            state.exp += finalDamage;
+
+            // Visuals
+            const rect = ui.targetArea.getBoundingClientRect();
+            let hitX = clientX ? clientX - rect.left : rect.width / 2 + (Math.random()*40-20);
+            let hitY = clientY ? clientY - rect.top : rect.height / 2 + (Math.random()*40-20);
+
+            if (!isAuto) {
+                playSound(weapon.sound);
+                createFloatingEffect(hitX, hitY, 'hit', weapon.text, weapon.color);
+                
+                // Shake physics
+                ui.faceContainer.style.transform = `perspective(1000px) rotateX(${(Math.random()-0.5)*30}deg) rotateY(${(Math.random()-0.5)*30}deg) scale(0.9)`;
+                setTimeout(() => ui.faceContainer.style.transform = 'scale(1)', 100);
+
+                ui.body.classList.remove('shake-active', 'shake-heavy');
+                void ui.body.offsetWidth;
+                ui.body.classList.add(combo.feverActive ? 'shake-heavy' : 'shake-active');
+
+                ui.hitFlash.style.opacity = '0.5';
+                setTimeout(() => ui.hitFlash.style.opacity = '0', 100);
+
+                // Combo System Update
+                if (!combo.feverActive) {
+                    combo.current += 5; // +5 combo per manual hit
+                    combo.lastClickTime = Date.now();
+                    if (combo.current >= combo.max) {
+                        // Trigger Fever
+                        combo.feverActive = true;
+                        combo.feverTimer = combo.feverDuration;
+                    }
+                }
+            }
+
+            createFloatingEffect(hitX, hitY, 'gold', finalDamage);
+
+            // Level Up Check
+            if (state.exp >= state.maxExp) {
+                state.level++;
+                state.exp -= state.maxExp;
+                state.maxExp = Math.floor(state.maxExp * 1.5);
+                
+                // Check if new weapon unlocked
+                const newWeapon = weapons.find(w => w.reqLevel === state.level);
+                if(newWeapon) {
+                    // Auto equip
+                    state.currentWeaponId = newWeapon.id;
+                    renderWeapons();
+                    // Alert player non-intrusively
+                    const alertEl = document.createElement('div');
+                    alertEl.className = 'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center text-4xl title-font text-cyan-400 z-50 pointer-events-none drop-shadow-[0_5px_5px_rgba(0,0,0,1)]';
+                    alertEl.style.animation = 'floatDamage 2s forwards';
+                    alertEl.innerHTML = `레벨업!<br><span class="text-2xl text-yellow-300">${newWeapon.name} 획득!</span>`;
+                    ui.body.appendChild(alertEl);
+                    setTimeout(() => alertEl.remove(), 2000);
+                }
+            }
+
+            updateUI();
+        }
+
+        // --- Event Listeners ---
+        ui.targetArea.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // Prevent zoom/scroll
+            initAudio();
+            for(let i=0; i<e.changedTouches.length; i++) {
+                applyHit(false, e.changedTouches[i].clientX, e.changedTouches[i].clientY);
+            }
+        }, {passive: false});
+
+        ui.targetArea.addEventListener('mousedown', (e) => {
+            initAudio();
+            applyHit(false, e.clientX, e.clientY);
+        });
+
+        // Tab Switching Logic
+        window.switchTab = function(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            document.getElementById(`tabBtn-${tabId}`).classList.add('active');
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+        };
+
+        // --- Game Loop (Auto Attack & Combo Decay) ---
+        let lastTime = performance.now();
+        let autoAttackAccumulator = 0;
+
+        function gameLoop(currentTime) {
+            const dt = (currentTime - lastTime) / 1000; // delta time in seconds
+            lastTime = currentTime;
+
+            // Handle Fever Timer & Combo Decay
+            if (combo.feverActive) {
+                combo.feverTimer -= dt;
+                if (combo.feverTimer <= 0) {
+                    combo.feverActive = false;
+                    combo.current = 0; // Reset combo after fever
+                }
+                updateUI();
+            } else {
+                // Decay combo if inactive for 0.5s
+                if (Date.now() - combo.lastClickTime > 500 && combo.current > 0) {
+                    combo.current -= combo.decayRate * dt;
+                    if (combo.current < 0) combo.current = 0;
+                    updateUI();
+                }
+            }
+
+            // Handle Auto Attacks (Spread over time for smooth visuals)
+            if (state.autoPower > 0) {
+                // How many attacks should happen per frame based on autoPower (per sec)
+                autoAttackAccumulator += state.autoPower * dt;
+                while (autoAttackAccumulator >= 1) {
+                    // Temporarily set autoPower to 1 for calculation so it hits 1 by 1 visually
+                    const storedPower = state.autoPower;
+                    state.autoPower = 1; 
+                    applyHit(true); // true = isAuto
+                    state.autoPower = storedPower;
+                    autoAttackAccumulator -= 1;
+                }
+            }
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        // --- Initialization ---
+        renderUpgrades();
+        renderWeapons();
         updateUI();
+        requestAnimationFrame(gameLoop);
+
     </script>
 </body>
 </html>
