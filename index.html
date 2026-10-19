@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>신희준 때리기: 레전드 키우기</title>
+    <title>신희준 때리기: 얼티밋 레전드</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
@@ -19,18 +19,12 @@
             transition: background-color 0.3s;
         }
 
-        /* Fever Time Background */
-        body.fever-active {
-            animation: feverBgPulse 1s infinite alternate;
-        }
-        @keyframes feverBgPulse {
-            0% { background-color: #450a0a; }
-            100% { background-color: #7f1d1d; }
-        }
+        .fever-active { animation: feverBgPulse 1s infinite alternate; }
+        @keyframes feverBgPulse { 0% { background-color: #450a0a; } 100% { background-color: #7f1d1d; } }
+        .blur-active { filter: blur(5px) grayscale(50%); pointer-events: none; }
 
         .title-font { font-family: 'Black Han Sans', sans-serif; }
 
-        /* Animations */
         @keyframes shake {
             0%, 100% { transform: translate(0, 0) rotate(0deg); }
             25% { transform: translate(-5px, 5px) rotate(-2deg); }
@@ -47,7 +41,6 @@
         .shake-active { animation: shake 0.1s cubic-bezier(.36,.07,.19,.97) both; }
         .shake-heavy { animation: shakeHeavy 0.25s cubic-bezier(.36,.07,.19,.97) both; }
 
-        /* Floating Text Effects */
         @keyframes floatDamage {
             0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
             50% { transform: translate(-50%, -120%) scale(1.2); opacity: 1; }
@@ -58,55 +51,62 @@
             100% { transform: translate(var(--tx), var(--ty)) scale(1.2); opacity: 0; }
         }
         .dmg-text {
-            position: absolute; pointer-events: none;
-            animation: floatDamage 0.6s ease-out forwards;
+            position: absolute; pointer-events: none; animation: floatDamage 0.6s ease-out forwards;
             font-family: 'Black Han Sans', sans-serif; z-index: 60;
             text-shadow: 2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000;
         }
         .res-text {
             position: absolute; pointer-events: none; font-weight: 900; z-index: 55;
-            animation: floatResource 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-            text-shadow: 1px 1px 2px #000;
+            animation: floatResource 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; text-shadow: 1px 1px 2px #000;
         }
 
-        /* Bruises & Tears */
         .bruise-mark {
-            position: absolute; transform: translate(-50%, -50%);
-            font-size: 2.5rem; pointer-events: none; z-index: 25;
-            opacity: 0.9; animation: fadeOutBruise 5s forwards;
-            filter: drop-shadow(0 0 2px rgba(0,0,0,0.5));
+            position: absolute; transform: translate(-50%, -50%); font-size: 2.5rem; pointer-events: none; z-index: 25;
+            opacity: 0.9; animation: fadeOutBruise 5s forwards; filter: drop-shadow(0 0 2px rgba(0,0,0,0.5));
         }
         .tear-drop {
-            position: absolute; transform: translate(-50%, -50%);
-            font-size: 1.5rem; pointer-events: none; z-index: 25;
+            position: absolute; transform: translate(-50%, -50%); font-size: 1.5rem; pointer-events: none; z-index: 25;
             animation: fallTear 1.5s ease-in forwards;
         }
-        @keyframes fadeOutBruise {
-            0%, 70% { opacity: 0.9; }
-            100% { opacity: 0; }
+        @keyframes fadeOutBruise { 0%, 70% { opacity: 0.9; } 100% { opacity: 0; } }
+        @keyframes fallTear { 0% { transform: translate(-50%, -50%) scale(0.8); opacity: 1; } 100% { transform: translate(-50%, 100px) scale(1.2); opacity: 0; } }
+
+        /* Speech Bubble */
+        .speech-bubble {
+            position: absolute; background: white; color: black; font-weight: bold; font-size: 0.9rem;
+            padding: 8px 12px; border-radius: 15px; z-index: 70; pointer-events: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 2px solid #ccc;
+            animation: popBubble 1.5s ease-in-out forwards;
         }
-        @keyframes fallTear {
-            0% { transform: translate(-50%, -50%) scale(0.8); opacity: 1; }
-            100% { transform: translate(-50%, 100px) scale(1.2); opacity: 0; }
+        .speech-bubble::after {
+            content: ''; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%);
+            border-width: 8px 8px 0; border-style: solid; border-color: white transparent transparent transparent;
+        }
+        @keyframes popBubble {
+            0% { transform: translate(-50%, 20px) scale(0); opacity: 0; }
+            15% { transform: translate(-50%, 0) scale(1.1); opacity: 1; }
+            30% { transform: translate(-50%, 0) scale(1); opacity: 1; }
+            80% { transform: translate(-50%, 0) scale(1); opacity: 1; }
+            100% { transform: translate(-50%, -10px) scale(0.9); opacity: 0; }
         }
 
-        /* Target Area */
+        /* Target Area & Face Overlays (Costumes) */
         #targetArea { touch-action: none; }
-        #faceContainer {
-            transition: transform 0.05s ease-out;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-        }
+        #faceContainer { transition: transform 0.05s ease-out; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
         .fever-active #faceContainer {
-            box-shadow: 0 0 50px #ef4444, 0 0 100px #f59e0b;
-            border-color: #facc15;
-            animation: pulseTarget 0.5s infinite alternate;
+            box-shadow: 0 0 50px #ef4444, 0 0 100px #f59e0b; border-color: #facc15; animation: pulseTarget 0.5s infinite alternate;
         }
-        @keyframes pulseTarget {
-            0% { transform: scale(1); }
-            100% { transform: scale(1.05); }
-        }
+        @keyframes pulseTarget { 0% { transform: scale(1); } 100% { transform: scale(1.05); } }
 
-        /* Tabs & Buttons */
+        .costume { position: absolute; pointer-events: none; z-index: 22; display: none; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
+        .costume.active { display: block; }
+        /* Positioning on a standard face */
+        #c-poop { top: -5%; left: 50%; transform: translateX(-50%); font-size: 5rem; }
+        #c-ribbon { top: 5%; left: 15%; font-size: 4rem; transform: rotate(-20deg); }
+        #c-glasses { top: 38%; left: 50%; transform: translateX(-50%); font-size: 6rem; width: 100%; text-align: center;}
+        #c-nose { top: 55%; left: 50%; transform: translateX(-50%); font-size: 3.5rem; }
+
+        /* UI Tabs & Buttons */
         .tab-btn { transition: all 0.2s; }
         .tab-btn.active { background-color: #3b82f6; color: white; border-bottom: 2px solid #60a5fa; }
         .tab-content { display: none; overflow-y: auto; height: 100%; }
@@ -121,30 +121,28 @@
         .weapon-btn.locked::after { content: '🔒'; position: absolute; font-size: 1.5rem; z-index: 10; top: 50%; left: 50%; transform: translate(-50%, -50%); }
         .weapon-btn.active { border-color: #facc15; background-color: rgba(250, 204, 21, 0.2); box-shadow: 0 0 15px rgba(250, 204, 21, 0.5); transform: scale(1.05); }
 
-        /* Progress Bars */
-        .progress-striped {
-            background-image: linear-gradient(45deg, rgba(255,255,255,.15) 25%, transparent 25%, transparent 50%, rgba(255,255,255,.15) 50%, rgba(255,255,255,.15) 75%, transparent 75%, transparent);
-            background-size: 1rem 1rem; animation: progress-stripes 1s linear infinite;
-        }
-        @keyframes progress-stripes { from { background-position: 1rem 0; } to { background-position: 0 0; } }
-
-        /* Custom Scrollbar for lists */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 10px; }
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+
+        /* Modal */
+        #questModal { background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); }
     </style>
 </head>
 <body class="flex flex-col items-center h-[100dvh] w-full relative" id="gameBody">
 
     <!-- Header Stats -->
-    <header class="w-full max-w-md p-4 z-30 pt-6 shrink-0 flex flex-col gap-3 bg-slate-900/80 backdrop-blur-md rounded-b-2xl border-b border-slate-700 shadow-lg">
+    <header class="w-full max-w-md p-4 z-30 pt-4 shrink-0 flex flex-col gap-2 bg-slate-900/90 backdrop-blur-md rounded-b-2xl border-b border-slate-700 shadow-lg">
         <div class="flex justify-between items-center w-full">
-            <h1 class="title-font text-2xl md:text-3xl text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 drop-shadow-md">레전드 키우기</h1>
+            <h1 class="title-font text-xl md:text-2xl text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 drop-shadow-md">얼티밋 레전드</h1>
             <div class="flex items-center gap-2">
-                <button onclick="resetData()" class="bg-red-600 hover:bg-red-500 text-white text-xs px-2 py-1 rounded-md border border-red-400 transition-colors shadow-sm font-bold">초기화</button>
-                <div class="flex items-center gap-2 bg-slate-800 px-3 py-1 rounded-full border border-yellow-500/50">
-                    <span class="text-xl">💰</span>
-                    <span id="goldText" class="title-font text-yellow-400 text-lg md:text-xl font-bold">0</span>
+                <div class="flex items-center gap-1 bg-yellow-900/50 px-2 py-1 rounded-full border border-yellow-500/50" title="환생 금니 (영구 버프)">
+                    <span class="text-lg">🦷</span>
+                    <span id="prestigeText" class="title-font text-yellow-300 text-sm md:text-base">0</span>
+                </div>
+                <div class="flex items-center gap-1 bg-slate-800 px-3 py-1 rounded-full border border-yellow-500/50">
+                    <span class="text-lg">💰</span>
+                    <span id="goldText" class="title-font text-yellow-400 text-base md:text-lg">0</span>
                 </div>
             </div>
         </div>
@@ -152,23 +150,22 @@
         <!-- EXP Bar -->
         <div class="w-full">
             <div class="flex justify-between items-end mb-1">
-                <span class="text-cyan-400 title-font text-xl drop-shadow-md">LV <span id="levelText">1</span></span>
-                <span class="text-slate-300 text-xs md:text-sm font-bold">EXP <span id="expText">0 / 20</span></span>
+                <span class="text-cyan-400 title-font text-lg">LV <span id="levelText">1</span></span>
+                <span class="text-slate-300 text-xs font-bold">EXP <span id="expText">0 / 20</span></span>
             </div>
-            <div class="w-full h-4 bg-slate-800 rounded-full overflow-hidden border border-slate-600 relative">
+            <div class="w-full h-3 bg-slate-800 rounded-full overflow-hidden border border-slate-600 relative">
                 <div id="expBar" class="h-full bg-gradient-to-r from-cyan-500 to-blue-500 transition-all duration-300 w-0"></div>
             </div>
         </div>
 
-        <!-- DPS & Click Power Info -->
-        <div class="flex justify-between text-xs md:text-sm text-slate-400 font-bold px-1">
-            <span>클릭 파워: <span id="clickPowerText" class="text-white">1</span></span>
-            <span>자동 공격: <span id="autoPowerText" class="text-white">0</span> / 초</span>
+        <div class="flex justify-between text-[10px] md:text-xs text-slate-400 font-bold px-1 mt-1">
+            <span>DPS: <span id="autoPowerText" class="text-white">0</span> <span id="multiText" class="text-yellow-400 ml-1"></span></span>
+            <button onclick="resetData()" class="text-red-400 underline">데이터 삭제</button>
         </div>
     </header>
 
     <!-- Main Game Area -->
-    <main class="flex-1 w-full max-w-md flex flex-col items-center justify-center relative z-20 px-4 py-2 min-h-0">
+    <main class="flex-1 w-full max-w-md flex flex-col items-center justify-center relative z-20 px-4 py-2 min-h-0" id="mainArea">
         
         <!-- Fever / Combo Bar -->
         <div class="w-full max-w-[280px] mb-4">
@@ -176,7 +173,7 @@
                 <span id="comboLabel" class="text-orange-400">COMBO</span>
                 <span id="comboMultiplier" class="text-yellow-400 hidden animate-pulse">FEVER x3!</span>
             </div>
-            <div class="w-full h-3 bg-slate-800 rounded-full overflow-hidden border border-slate-700 shadow-inner">
+            <div class="w-full h-2 md:h-3 bg-slate-800 rounded-full overflow-hidden border border-slate-700 shadow-inner">
                 <div id="comboBar" class="h-full bg-gradient-to-r from-orange-500 to-red-500 w-0 transition-all duration-[50ms]"></div>
             </div>
         </div>
@@ -185,501 +182,525 @@
         <div class="relative w-full max-w-[240px] md:max-w-[280px] aspect-square cursor-crosshair select-none" id="targetArea">
             <div id="faceContainer" class="w-full h-full rounded-full overflow-hidden border-4 border-slate-600 relative bg-slate-800 flex items-center justify-center pointer-events-none">
                 
-                <div id="imageFallback" class="absolute inset-0 flex items-center justify-center text-center p-4 z-10 hidden bg-slate-800">
-                    <p class="text-sm md:text-base text-red-400 font-bold break-keep">
-                        20260701_125816.jpg 파일을 찾을 수 없습니다
-                    </p>
-                </div>
-
                 <img id="targetImage" src="20260701_125816.jpg" alt="타겟" class="absolute inset-0 w-full h-full object-cover select-none pointer-events-none z-20">
+                
+                <!-- Humiliation Costumes (Z-index 22) -->
+                <div id="c-poop" class="costume">💩</div>
+                <div id="c-ribbon" class="costume">🎀</div>
+                <div id="c-glasses" class="costume">🕶️</div>
+                <div id="c-nose" class="costume">🤡</div>
+
                 <div id="hitFlash" class="absolute inset-0 bg-white opacity-0 pointer-events-none transition-opacity duration-100 z-30 mix-blend-overlay"></div>
             </div>
             <div id="fxContainer" class="absolute inset-0 pointer-events-none z-40 overflow-visible"></div>
+            <div id="speechContainer" class="absolute -top-10 left-1/2 w-0 h-0 pointer-events-none z-50 overflow-visible"></div>
         </div>
-        
     </main>
 
     <!-- Bottom Tab UI -->
-    <footer class="w-full max-w-md h-[250px] md:h-[300px] z-30 bg-slate-800/95 backdrop-blur-md rounded-t-3xl border-t-2 border-slate-600 flex flex-col shrink-0 shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
+    <footer class="w-full max-w-md h-[260px] md:h-[300px] z-30 bg-slate-800/95 backdrop-blur-md rounded-t-3xl border-t-2 border-slate-600 flex flex-col shrink-0 shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
         
-        <!-- Tab Headers -->
         <div class="flex w-full border-b border-slate-700">
-            <button onclick="switchTab('upgrades')" id="tabBtn-upgrades" class="tab-btn active flex-1 py-3 text-sm md:text-base font-bold text-slate-300 rounded-tl-3xl bg-slate-800/50">
-                🛒 상점 (강화)
-            </button>
-            <button onclick="switchTab('weapons')" id="tabBtn-weapons" class="tab-btn flex-1 py-3 text-sm md:text-base font-bold text-slate-300 rounded-tr-3xl bg-slate-800/50">
-                🎒 무기 (스킨)
-            </button>
+            <button onclick="switchTab('upgrades')" id="tabBtn-upgrades" class="tab-btn active flex-1 py-2 md:py-3 text-xs md:text-sm font-bold text-slate-300 rounded-tl-3xl bg-slate-800/50">강화</button>
+            <button onclick="switchTab('weapons')" id="tabBtn-weapons" class="tab-btn flex-1 py-2 md:py-3 text-xs md:text-sm font-bold text-slate-300 bg-slate-800/50">무기&뽑기</button>
+            <button onclick="switchTab('prestige')" id="tabBtn-prestige" class="tab-btn flex-1 py-2 md:py-3 text-xs md:text-sm font-bold text-slate-300 rounded-tr-3xl bg-slate-800/50">환생(⭐)</button>
         </div>
 
-        <!-- Upgrades Tab Content -->
+        <!-- Upgrades Tab -->
         <div id="tab-upgrades" class="tab-content active p-3">
-            <div class="flex flex-col gap-2" id="upgradeList">
-                <!-- Rendered by JS -->
-            </div>
+            <div class="flex flex-col gap-2" id="upgradeList"></div>
         </div>
 
-        <!-- Weapons Tab Content -->
-        <div id="tab-weapons" class="tab-content p-3">
-            <p class="text-center text-xs text-slate-400 mb-2">특정 레벨 달성 시 무기가 해금됩니다.</p>
-            <div class="grid grid-cols-3 gap-2" id="weaponGrid">
-                <!-- Rendered by JS -->
+        <!-- Weapons & Gacha Tab -->
+        <div id="tab-weapons" class="tab-content p-3 relative">
+            <div class="flex justify-between items-center mb-3 p-3 bg-indigo-900/50 rounded-xl border border-indigo-500">
+                <div>
+                    <h3 class="font-bold text-indigo-300">럭키 박스 가챠 🎰</h3>
+                    <p class="text-[10px] text-slate-400">전설의 무기를 뽑아보세요! (1회 1,000💰)</p>
+                </div>
+                <button onclick="rollGacha()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 px-4 rounded-lg shadow-lg transform transition active:scale-95 text-sm">뽑기</button>
             </div>
+            <div class="grid grid-cols-4 gap-2" id="weaponGrid"></div>
+        </div>
+
+        <!-- Prestige Tab -->
+        <div id="tab-prestige" class="tab-content p-3 flex flex-col items-center justify-center text-center h-full pb-10">
+            <h2 class="title-font text-3xl text-yellow-400 mb-2">환 생</h2>
+            <p class="text-sm text-slate-300 mb-4">LV.50에 도달하면 환생할 수 있습니다.<br>모든 진행도를 초기화하고 <strong class="text-yellow-300">희준의 금니(영구 버프)</strong>를 얻습니다.</p>
+            <p class="text-xs text-cyan-300 mb-4">현재 배율: <strong id="prestigeMultiplierText" class="text-lg text-white">x1</strong></p>
+            <button id="btnPrestige" onclick="doPrestige()" class="bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-500 hover:to-orange-500 text-white font-bold py-3 px-8 rounded-full shadow-[0_0_15px_rgba(234,179,8,0.5)] transform transition active:scale-95 disabled:grayscale disabled:opacity-50 disabled:shadow-none" disabled>
+                환생하기 (LV.50 필요)
+            </button>
         </div>
     </footer>
 
+    <!-- Sudden Quest Modal -->
+    <div id="questModal" class="absolute inset-0 z-[100] flex flex-col items-center justify-center hidden">
+        <div class="bg-slate-800 border-4 border-red-500 rounded-2xl p-6 max-w-[300px] text-center shadow-[0_0_50px_rgba(239,68,68,0.5)] relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-slate-700"><div id="questTimerBar" class="h-full bg-red-500 w-full"></div></div>
+            <h2 class="title-font text-2xl text-red-400 mb-2 animate-pulse">⚠️ 반격 주의보 ⚠️</h2>
+            <p class="text-sm text-slate-300 mb-4">신희준이 킹받았습니다!<br><strong class="text-white">10초 안에 <span class="text-yellow-400 text-lg">50대</span></strong>를 때리세요!</p>
+            <div class="text-4xl title-font text-white mb-2" id="questClickCount">0 / 50</div>
+            <p class="text-xs text-red-300">실패 시 보유 골드 10% 감소 및 스턴</p>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script>
+        // --- Custom Voice System (Feature 1) ---
+        const voiceFiles = ['voice1.m4a', 'voice2.m4a', 'voice3.m4a'];
+        const audioPlayers = voiceFiles.map(file => new Audio(file));
+        const speechLines = [
+            "아얏!", "그만 좀 때려!", "이것밖에 안 돼? ㅋㅋ", 
+            "안 아픈데? ㅋㅋ", "살려주세요...", "아 킹받네 진짜", "머리 망가진다고!"
+        ];
+
+        function playVoiceAndSpeech() {
+            if (Math.random() < 0.25) { // 25% chance to trigger voice/speech
+                // Play Audio (if available)
+                try {
+                    const player = audioPlayers[Math.floor(Math.random() * audioPlayers.length)];
+                    player.currentTime = 0;
+                    player.volume = 0.8;
+                    const playPromise = player.play();
+                    if (playPromise !== undefined) {
+                        playPromise.catch(error => { /* Audio not found or blocked, ignore gracefully */ });
+                    }
+                } catch (e) {}
+
+                // Show Speech Bubble
+                const container = document.getElementById('speechContainer');
+                container.innerHTML = '';
+                const bubble = document.createElement('div');
+                bubble.className = 'speech-bubble whitespace-nowrap';
+                bubble.innerText = speechLines[Math.floor(Math.random() * speechLines.length)];
+                container.appendChild(bubble);
+                setTimeout(() => bubble.remove(), 1500);
+            }
+        }
+
         // --- Core Game State ---
         let state = {
-            level: 1,
-            exp: 0,
-            maxExp: 20,
-            gold: 0,
-            clickPower: 1,
-            autoPower: 0,
-            currentWeaponId: 1
+            level: 1, exp: 0, maxExp: 20, gold: 0,
+            clickPower: 1, autoPower: 0, currentWeaponId: 1,
+            prestige: 0, // Feature 5: 금니
+            unlockedGacha: [] // Feature 2: Gacha weapon IDs
         };
 
-        // --- Combo & Fever State ---
-        let combo = {
-            current: 0,
-            max: 100,
-            feverActive: false,
-            feverTimer: 0,
-            feverDuration: 10, // seconds
-            decayRate: 15, // combo lost per second if not clicked
-            lastClickTime: Date.now()
-        };
+        let combo = { current: 0, max: 100, feverActive: false, feverTimer: 0, feverDuration: 8, decayRate: 15, lastClickTime: Date.now() };
+
+        // Feature 3: Quest State
+        let quest = { active: false, clicks: 0, target: 50, timer: 0, maxTime: 10, nextQuestTimer: Math.random() * 30 + 30 };
 
         // --- Data Definitions ---
-        const weapons = [
-            { id: 1,  name: '맨손',   reqLevel: 1,  icon: '🖐️', color: '#ef4444', text: '찰싹!', sound: 'slap' },
-            { id: 2,  name: '글러브', reqLevel: 2,  icon: '🥊', color: '#f97316', text: '퍽!!',   sound: 'glove' },
-            { id: 5,  name: '뿅망치', reqLevel: 5,  icon: '🔨', color: '#facc15', text: '뽀용!', sound: 'hammer' },
-            { id: 10, name: '프라이팬',reqLevel: 10, icon: '🍳', color: '#94a3b8', text: '깡!!!',  sound: 'pan' },
-            { id: 20, name: '핵펀치', reqLevel: 20, icon: '☢️', color: '#dc2626', text: '콰광!!!',sound: 'nuclear' }
+        const baseWeapons = [
+            { id: 1,  name: '맨손',   reqLevel: 1,  icon: '🖐️', color: '#ef4444', text: '찰싹!', sound: 'slap', power: 0 },
+            { id: 2,  name: '글러브', reqLevel: 5,  icon: '🥊', color: '#f97316', text: '퍽!!',   sound: 'glove', power: 2 },
+            { id: 3,  name: '뿅망치', reqLevel: 15, icon: '🔨', color: '#facc15', text: '뽀용!', sound: 'hammer', power: 5 },
+            { id: 4, name: '핵펀치', reqLevel: 30, icon: '☢️', color: '#dc2626', text: '콰광!!!',sound: 'nuclear', power: 20 }
+        ];
+
+        const gachaWeapons = [
+            { id: 101, name: '파리채', isGacha: true, icon: '🪰', color: '#84cc16', text: '챡!', sound: 'slap', power: 50 },
+            { id: 999, name: '전설슬리퍼', isGacha: true, icon: '🩴', color: '#d946ef', text: '짜아아악!!!', sound: 'nuclear', power: 500 }
         ];
 
         let upgrades = [
             { id: 'c1', type: 'click', name: '손가락 단련', desc: '클릭 파워 +1', baseCost: 10, costMult: 1.5, power: 1, level: 0, icon: '💪' },
             { id: 'c2', type: 'click', name: '집중 타격', desc: '클릭 파워 +5', baseCost: 100, costMult: 1.6, power: 5, level: 0, icon: '🎯' },
             { id: 'a1', type: 'auto',  name: '초보 용병', desc: '초당 자동 타격 +1', baseCost: 50, costMult: 1.4, power: 1, level: 0, icon: '🤖' },
-            { id: 'a2', type: 'auto',  name: '닌자 분신', desc: '초당 자동 타격 +10', baseCost: 500, costMult: 1.5, power: 10, level: 0, icon: '🥷' }
+            { id: 'a2', type: 'auto',  name: '드론 공격', desc: '초당 자동 타격 +10', baseCost: 500, costMult: 1.5, power: 10, level: 0, icon: '🚁' }
         ];
 
-        // --- Save / Load System ---
+        // --- Save / Load ---
         function saveData() {
-            const dataToSave = {
-                state: state,
-                upgradeLevels: upgrades.map(u => u.level)
-            };
-            localStorage.setItem('hitShinGameSave', JSON.stringify(dataToSave));
+            localStorage.setItem('hitShinUltimate', JSON.stringify({ state, upgradeLevels: upgrades.map(u => u.level) }));
         }
 
         function loadData() {
-            const saved = localStorage.getItem('hitShinGameSave');
+            const saved = localStorage.getItem('hitShinUltimate');
             if (saved) {
-                const parsed = JSON.parse(saved);
-                state = { ...state, ...parsed.state };
-                if (parsed.upgradeLevels) {
-                    upgrades.forEach((u, idx) => {
-                        u.level = parsed.upgradeLevels[idx] || 0;
-                    });
-                }
+                const p = JSON.parse(saved);
+                state = { ...state, ...p.state };
+                if (p.upgradeLevels) upgrades.forEach((u, idx) => u.level = p.upgradeLevels[idx] || 0);
             }
+            updateCostumes(); // Apply Feature 4 on load
         }
 
         function resetData() {
-            if(confirm("정말 모든 데이터를 초기화하시겠습니까?\n진행 상황이 삭제되고 처음부터 다시 시작합니다.")) {
-                localStorage.removeItem('hitShinGameSave');
+            if(confirm("모든 데이터를 삭제합니다. (환생 포함 전부 날아갑니다!)")) {
+                localStorage.removeItem('hitShinUltimate');
                 location.reload();
             }
         }
 
         // --- DOM Elements ---
         const ui = {
-            gold: document.getElementById('goldText'),
-            level: document.getElementById('levelText'),
-            exp: document.getElementById('expText'),
-            expBar: document.getElementById('expBar'),
-            clickPower: document.getElementById('clickPowerText'),
+            gold: document.getElementById('goldText'), level: document.getElementById('levelText'),
+            exp: document.getElementById('expText'), expBar: document.getElementById('expBar'),
+            prestige: document.getElementById('prestigeText'), multi: document.getElementById('multiText'),
             autoPower: document.getElementById('autoPowerText'),
-            comboBar: document.getElementById('comboBar'),
-            comboLabel: document.getElementById('comboLabel'),
-            comboMult: document.getElementById('comboMultiplier'),
-            body: document.getElementById('gameBody'),
-            targetArea: document.getElementById('targetArea'),
-            faceContainer: document.getElementById('faceContainer'),
-            fxContainer: document.getElementById('fxContainer'),
-            hitFlash: document.getElementById('hitFlash'),
-            targetImage: document.getElementById('targetImage'),
-            imageFallback: document.getElementById('imageFallback'),
-            upgradeList: document.getElementById('upgradeList'),
-            weaponGrid: document.getElementById('weaponGrid')
+            comboBar: document.getElementById('comboBar'), comboMult: document.getElementById('comboMultiplier'),
+            body: document.getElementById('gameBody'), main: document.getElementById('mainArea'),
+            targetArea: document.getElementById('targetArea'), // <-- 이 부분을 추가했습니다!
+            faceContainer: document.getElementById('faceContainer'), fxContainer: document.getElementById('fxContainer'),
+            hitFlash: document.getElementById('hitFlash'), targetImage: document.getElementById('targetImage'),
+            upgradeList: document.getElementById('upgradeList'), weaponGrid: document.getElementById('weaponGrid'),
+            btnPrestige: document.getElementById('btnPrestige'), prestigeMult: document.getElementById('prestigeMultiplierText')
         };
 
-        // --- Image Fallback ---
-        ui.targetImage.onerror = () => {
-            ui.targetImage.style.display = 'none';
-            ui.imageFallback.classList.remove('hidden');
-        };
-
-        // --- Audio System ---
+        // --- Audio Synthesizer ---
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         let audioCtx;
-        
         function initAudio() {
             if (!audioCtx) audioCtx = new AudioContext();
             if (audioCtx.state === 'suspended') audioCtx.resume();
         }
-
         function playSound(type) {
             if (!audioCtx) return;
-            const t = audioCtx.currentTime;
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-
+            const t = audioCtx.currentTime, osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination);
             if (type === 'slap') {
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(800, t); osc.frequency.exponentialRampToValueAtTime(100, t + 0.1);
+                osc.type = 'triangle'; osc.frequency.setValueAtTime(800, t); osc.frequency.exponentialRampToValueAtTime(100, t + 0.1);
                 gain.gain.setValueAtTime(0.5, t); gain.gain.exponentialRampToValueAtTime(0.01, t + 0.1);
                 osc.start(t); osc.stop(t + 0.1);
             } else if (type === 'glove') {
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(150, t); osc.frequency.exponentialRampToValueAtTime(50, t + 0.15);
+                osc.type = 'sine'; osc.frequency.setValueAtTime(150, t); osc.frequency.exponentialRampToValueAtTime(50, t + 0.15);
                 gain.gain.setValueAtTime(1, t); gain.gain.exponentialRampToValueAtTime(0.01, t + 0.15);
                 osc.start(t); osc.stop(t + 0.15);
             } else if (type === 'hammer') {
-                osc.type = 'square';
-                osc.frequency.setValueAtTime(400, t); osc.frequency.linearRampToValueAtTime(800, t + 0.05); osc.frequency.linearRampToValueAtTime(300, t + 0.15);
-                gain.gain.setValueAtTime(0.4, t); gain.gain.linearRampToValueAtTime(0.6, t + 0.05); gain.gain.exponentialRampToValueAtTime(0.01, t + 0.2);
+                osc.type = 'square'; osc.frequency.setValueAtTime(400, t); osc.frequency.linearRampToValueAtTime(800, t+0.05); osc.frequency.linearRampToValueAtTime(300, t+0.15);
+                gain.gain.setValueAtTime(0.4, t); gain.gain.linearRampToValueAtTime(0.6, t+0.05); gain.gain.exponentialRampToValueAtTime(0.01, t+0.2);
                 osc.start(t); osc.stop(t + 0.2);
-            } else if (type === 'pan') {
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(1000, t); osc.frequency.exponentialRampToValueAtTime(200, t + 0.3);
-                gain.gain.setValueAtTime(0.8, t); gain.gain.exponentialRampToValueAtTime(0.01, t + 0.4);
-                osc.start(t); osc.stop(t + 0.4);
             } else if (type === 'nuclear') {
-                osc.type = 'square';
-                osc.frequency.setValueAtTime(100, t); osc.frequency.exponentialRampToValueAtTime(10, t + 0.8);
+                osc.type = 'square'; osc.frequency.setValueAtTime(100, t); osc.frequency.exponentialRampToValueAtTime(10, t + 0.8);
                 gain.gain.setValueAtTime(1.5, t); gain.gain.exponentialRampToValueAtTime(0.01, t + 0.8);
                 osc.start(t); osc.stop(t + 0.8);
             }
         }
 
-        // --- Core Logic ---
-        
-        function getCost(upgrade) {
-            return Math.floor(upgrade.baseCost * Math.pow(upgrade.costMult, upgrade.level));
+        // --- Core Functions ---
+        function getCost(u) { return Math.floor(u.baseCost * Math.pow(u.costMult, u.level)); }
+        function getMultiplier() { return 1 + state.prestige; }
+
+        function updateCostumes() {
+            // Feature 4: Humiliation Costumes
+            document.getElementById('c-nose').classList.toggle('active', state.level >= 10);
+            document.getElementById('c-glasses').classList.toggle('active', state.level >= 20);
+            document.getElementById('c-ribbon').classList.toggle('active', state.level >= 30);
+            document.getElementById('c-poop').classList.toggle('active', state.level >= 40);
         }
 
-        function renderUpgrades() {
-            ui.upgradeList.innerHTML = '';
-            upgrades.forEach(u => {
-                const cost = getCost(u);
-                const canAfford = state.gold >= cost;
-                const btn = document.createElement('button');
-                btn.className = `upgrade-btn flex items-center justify-between p-2 md:p-3 rounded-xl border-2 ${canAfford ? 'bg-slate-700 border-slate-500 hover:border-blue-400' : 'bg-slate-800 border-slate-700'}`;
-                btn.disabled = !canAfford;
-                btn.onclick = () => buyUpgrade(u.id);
-                
-                btn.innerHTML = `
-                    <div class="flex items-center gap-3 text-left">
-                        <div class="text-3xl">${u.icon}</div>
-                        <div>
-                            <div class="font-bold text-sm md:text-base text-slate-100">${u.name} <span class="text-xs text-blue-400 ml-1">Lv.${u.level}</span></div>
-                            <div class="text-xs text-slate-400">${u.desc}</div>
-                        </div>
-                    </div>
-                    <div class="flex flex-col items-end">
-                        <div class="font-bold text-yellow-400 flex items-center gap-1 text-sm md:text-base">
-                            <span>💰</span> ${cost}
-                        </div>
-                        <div class="text-[10px] text-slate-500">구매하기</div>
-                    </div>
-                `;
-                ui.upgradeList.appendChild(btn);
-            });
-        }
-
-        function renderWeapons() {
-            ui.weaponGrid.innerHTML = '';
-            weapons.forEach(w => {
-                const isUnlocked = state.level >= w.reqLevel;
-                const isActive = state.currentWeaponId === w.id;
-                
-                const btn = document.createElement('button');
-                btn.className = `weapon-btn flex flex-col items-center justify-center p-3 rounded-xl border-2 border-slate-600 ${!isUnlocked ? 'locked bg-slate-800' : 'bg-slate-700'} ${isActive ? 'active' : ''}`;
-                btn.onclick = () => selectWeapon(w.id);
-                
-                btn.innerHTML = `
-                    <span class="text-3xl mb-1 drop-shadow-md">${w.icon}</span>
-                    <span class="text-xs font-bold text-slate-200">${w.name}</span>
-                    <span class="text-[10px] ${isUnlocked ? 'text-cyan-400' : 'text-slate-500'} mt-1">Lv.${w.reqLevel} 해금</span>
-                `;
-                ui.weaponGrid.appendChild(btn);
-            });
-        }
-
-        function updateUI() {
-            ui.gold.innerText = state.gold.toLocaleString();
+        function renderUI() {
+            ui.gold.innerText = Math.floor(state.gold).toLocaleString();
             ui.level.innerText = state.level;
             ui.exp.innerText = `${Math.floor(state.exp)} / ${state.maxExp}`;
             ui.expBar.style.width = `${Math.min(100, (state.exp / state.maxExp) * 100)}%`;
-            ui.clickPower.innerText = state.clickPower.toLocaleString();
-            ui.autoPower.innerText = state.autoPower.toLocaleString();
+            ui.prestige.innerText = state.prestige;
             
-            // Fever/Combo UI
+            let currentWep = [...baseWeapons, ...gachaWeapons].find(w => w.id === state.currentWeaponId);
+            let totalDps = (state.autoPower + (currentWep ? currentWep.power : 0)) * getMultiplier();
+            ui.autoPower.innerText = totalDps.toLocaleString();
+            ui.multi.innerText = state.prestige > 0 ? `(x${getMultiplier()})` : '';
+            
+            // Prestige Tab
+            const canPrestige = state.level >= 50;
+            ui.btnPrestige.disabled = !canPrestige;
+            ui.btnPrestige.innerText = canPrestige ? "환생하기" : "환생하기 (LV.50 필요)";
+            ui.prestigeMult.innerText = `x${getMultiplier()}`;
+
+            // Fever UI
             if (combo.feverActive) {
                 ui.comboBar.style.width = `${(combo.feverTimer / combo.feverDuration) * 100}%`;
                 ui.comboBar.className = 'h-full bg-yellow-400 transition-none';
                 ui.comboMult.classList.remove('hidden');
                 ui.body.classList.add('fever-active');
-                
-                // 피버 타임 사진 변경 로직 (깜빡임 방지를 위해 중복 교체 안함)
-                if (!ui.targetImage.src.endsWith('IMG_20261019_003642_894.jpg')) {
-                    ui.targetImage.style.display = 'block';
-                    ui.imageFallback.classList.add('hidden');
-                    ui.targetImage.src = 'IMG_20261019_003642_894.jpg';
-                }
+                if (!ui.targetImage.src.endsWith('IMG_20261019_003642_894.jpg')) ui.targetImage.src = 'IMG_20261019_003642_894.jpg';
             } else {
                 ui.comboBar.style.width = `${(combo.current / combo.max) * 100}%`;
                 ui.comboBar.className = 'h-full bg-gradient-to-r from-orange-500 to-red-500 transition-all duration-[50ms]';
                 ui.comboMult.classList.add('hidden');
                 ui.body.classList.remove('fever-active');
-                
-                // 기본 사진으로 복구
-                if (!ui.targetImage.src.endsWith('20260701_125816.jpg')) {
-                    ui.targetImage.style.display = 'block';
-                    ui.imageFallback.classList.add('hidden');
-                    ui.targetImage.src = '20260701_125816.jpg';
-                }
+                if (!ui.targetImage.src.endsWith('20260701_125816.jpg')) ui.targetImage.src = '20260701_125816.jpg';
             }
 
-            renderUpgrades(); // Updates button states (disabled/enabled)
+            // Upgrades Render
+            ui.upgradeList.innerHTML = '';
+            upgrades.forEach(u => {
+                const cost = getCost(u), canAfford = state.gold >= cost;
+                ui.upgradeList.innerHTML += `
+                    <button onclick="buyUpgrade('${u.id}')" ${!canAfford?'disabled':''} class="upgrade-btn flex items-center justify-between p-2 rounded-xl border-2 ${canAfford ? 'bg-slate-700 border-slate-500 hover:border-blue-400' : 'bg-slate-800 border-slate-700'}">
+                        <div class="flex items-center gap-3 text-left">
+                            <div class="text-3xl">${u.icon}</div>
+                            <div>
+                                <div class="font-bold text-sm text-slate-100">${u.name} <span class="text-xs text-blue-400 ml-1">Lv.${u.level}</span></div>
+                                <div class="text-xs text-slate-400">${u.desc}</div>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-end">
+                            <div class="font-bold text-yellow-400 flex items-center gap-1 text-sm"><span>💰</span> ${cost}</div>
+                        </div>
+                    </button>`;
+            });
+
+            // Weapons Render
+            ui.weaponGrid.innerHTML = '';
+            const allWeapons = [...baseWeapons, ...gachaWeapons.filter(w => state.unlockedGacha.includes(w.id))];
+            allWeapons.forEach(w => {
+                const isUnlocked = w.isGacha ? true : state.level >= w.reqLevel;
+                const isActive = state.currentWeaponId === w.id;
+                ui.weaponGrid.innerHTML += `
+                    <button onclick="selectWeapon(${w.id})" class="weapon-btn flex flex-col items-center justify-center p-2 rounded-xl border-2 border-slate-600 ${!isUnlocked ? 'locked bg-slate-800' : 'bg-slate-700'} ${isActive ? 'active' : ''}">
+                        <span class="text-2xl mb-1">${w.icon}</span>
+                        <span class="text-[10px] font-bold text-slate-200">${w.name}</span>
+                        ${w.isGacha ? '<span class="text-[9px] text-purple-400">가챠 획득</span>' : `<span class="text-[9px] ${isUnlocked ? 'text-cyan-400' : 'text-slate-500'}">Lv.${w.reqLevel}</span>`}
+                    </button>`;
+            });
         }
 
-        function buyUpgrade(id) {
+        window.buyUpgrade = (id) => {
             const u = upgrades.find(x => x.id === id);
             const cost = getCost(u);
             if (state.gold >= cost) {
-                state.gold -= cost;
-                u.level++;
+                state.gold -= cost; u.level++;
                 if (u.type === 'click') state.clickPower += u.power;
                 if (u.type === 'auto') state.autoPower += u.power;
-                
-                initAudio(); // User interaction
-                saveData(); // 구매 후 자동 저장
-                updateUI();
+                initAudio(); saveData(); renderUI();
             }
-        }
+        };
 
-        function selectWeapon(id) {
-            const w = weapons.find(x => x.id === id);
-            if (state.level >= w.reqLevel) {
-                state.currentWeaponId = id;
-                saveData(); // 무기 교체 후 자동 저장
-                renderWeapons();
+        window.selectWeapon = (id) => {
+            const w = [...baseWeapons, ...gachaWeapons].find(x => x.id === id);
+            if (w.isGacha || state.level >= w.reqLevel) {
+                state.currentWeaponId = id; saveData(); renderUI();
             }
-        }
+        };
 
-        function createFloatingEffect(x, y, type, value, weaponColor) {
-            // Damage/Hit text
-            if(type === 'hit') {
-                const dmgEl = document.createElement('div');
-                dmgEl.className = 'dmg-text text-3xl md:text-4xl';
-                dmgEl.style.left = `${x}px`;
-                dmgEl.style.top = `${y}px`;
-                dmgEl.style.color = weaponColor || '#fff';
-                dmgEl.innerText = value;
-                ui.fxContainer.appendChild(dmgEl);
-                setTimeout(() => dmgEl.remove(), 600);
-            }
+        window.switchTab = (tabId) => {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById(`tabBtn-${tabId}`).classList.add('active');
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+        };
+
+        // --- Feature 2: Gacha System ---
+        window.rollGacha = () => {
+            if (state.gold < 1000) { alert("골드가 부족합니다! (1,000💰 필요)"); return; }
+            state.gold -= 1000;
+            initAudio(); playSound('hammer');
             
-            // Gold drop effect
-            if(type === 'gold' && Math.random() > 0.3) { // 70% chance to show coin visually
-                const coinEl = document.createElement('div');
-                coinEl.className = 'res-text text-yellow-400 text-lg';
-                coinEl.style.left = `${x}px`;
-                coinEl.style.top = `${y}px`;
-                coinEl.style.setProperty('--tx', `${(Math.random()-0.5)*100}px`);
-                coinEl.style.setProperty('--ty', `${-50 - Math.random()*50}px`);
-                coinEl.innerText = `+${value} 💰`;
-                ui.fxContainer.appendChild(coinEl);
-                setTimeout(() => coinEl.remove(), 800);
+            const rand = Math.random() * 100;
+            let msg = "", wonWeaponId = null;
+
+            if (rand < 1) { // 1%
+                wonWeaponId = 999; msg = "🎉 [기적] 전설의 슬리퍼 획득! 🎉";
+            } else if (rand < 10) { // 9%
+                wonWeaponId = 101; msg = "✨ [희귀] 엄마의 파리채 획득!";
+            } else { // 90%
+                msg = "💧 꽝! 포션을 얻어 콤보가 회복되었습니다.";
+                combo.current = Math.min(combo.max, combo.current + 30);
             }
+
+            if (wonWeaponId && !state.unlockedGacha.includes(wonWeaponId)) {
+                state.unlockedGacha.push(wonWeaponId);
+            } else if (wonWeaponId) {
+                msg += " (이미 보유 중이라 골드로 환급: +5000💰)";
+                state.gold += 5000;
+            }
+
+            alert(msg);
+            saveData(); renderUI();
+        };
+
+        // --- Feature 5: Prestige System ---
+        window.doPrestige = () => {
+            if(state.level < 50) return;
+            if(confirm("정말 환생하시겠습니까?\n레벨, 경험치, 골드, 강화, 해금된 코스튬이 0으로 초기화됩니다.\n대신 영구적인 데미지/골드 배율이 증가합니다!")) {
+                state.prestige++;
+                state.level = 1; state.exp = 0; state.maxExp = 20; state.gold = 0;
+                state.clickPower = 1; state.autoPower = 0; state.currentWeaponId = 1;
+                upgrades.forEach(u => u.level = 0);
+                // Keep unlockedGacha array
+                updateCostumes(); saveData(); renderUI();
+                alert(`환생 완료! 새로운 배율: x${getMultiplier()}`);
+            }
+        };
+
+        // --- Visual Effects ---
+        function createFloatingText(x, y, text, type, color) {
+            const el = document.createElement('div');
+            el.className = type === 'hit' ? 'dmg-text text-3xl md:text-4xl' : 'res-text text-yellow-400 text-lg';
+            el.style.left = `${x}px`; el.style.top = `${y}px`;
+            if (type === 'hit') {
+                el.style.color = color || '#fff'; el.innerText = text;
+            } else {
+                el.style.setProperty('--tx', `${(Math.random()-0.5)*100}px`);
+                el.style.setProperty('--ty', `${-50 - Math.random()*50}px`);
+                el.innerText = `+${text} 💰`;
+            }
+            ui.fxContainer.appendChild(el);
+            setTimeout(() => el.remove(), type === 'hit' ? 600 : 800);
         }
 
+        // --- Hit Logic ---
         function applyHit(isAuto = false, clientX = 0, clientY = 0) {
-            const weapon = weapons.find(w => w.id === state.currentWeaponId);
-            const multiplier = combo.feverActive ? 3 : 1;
+            const weapon = [...baseWeapons, ...gachaWeapons].find(w => w.id === state.currentWeaponId);
+            const feverMult = combo.feverActive ? 3 : 1;
             
             let power = isAuto ? state.autoPower : state.clickPower;
+            power += weapon ? (weapon.power || 0) : 0; // add weapon base power
             if (power <= 0) return;
 
-            const finalDamage = power * multiplier;
+            const finalDamage = power * getMultiplier() * feverMult;
             
-            // Resource Gain (1 Damage = 1 Gold & 1 EXP)
-            state.gold += finalDamage;
-            state.exp += finalDamage;
+            state.gold += finalDamage; state.exp += finalDamage;
 
-            // Visuals
             const rect = ui.targetArea.getBoundingClientRect();
             let hitX = clientX ? clientX - rect.left : rect.width / 2 + (Math.random()*40-20);
             let hitY = clientY ? clientY - rect.top : rect.height / 2 + (Math.random()*40-20);
 
             if (!isAuto) {
-                playSound(weapon.sound);
-                createFloatingEffect(hitX, hitY, 'hit', weapon.text, weapon.color);
-                
-                // 멍자국 또는 반창고 스폰 (얼굴 컨테이너 내부에 추가)
-                const marks = ['💢', '🩹', '🤕'];
-                const markEl = document.createElement('div');
-                markEl.className = 'bruise-mark';
-                markEl.innerText = marks[Math.floor(Math.random() * marks.length)];
-                markEl.style.left = `${hitX}px`;
-                markEl.style.top = `${hitY}px`;
-                ui.faceContainer.appendChild(markEl);
-                setTimeout(() => markEl.remove(), 5000); // 5초 뒤 사라짐
+                // Quest Check
+                if (quest.active) {
+                    quest.clicks++;
+                    document.getElementById('questClickCount').innerText = `${quest.clicks} / ${quest.target}`;
+                }
 
-                // 20% 확률로 눈물 흘리기 애니메이션 발생
+                playSound(weapon.sound);
+                playVoiceAndSpeech(); // Feature 1
+
+                createFloatingText(hitX, hitY, weapon.text, 'hit', weapon.color);
+                
+                // Bruises
+                const marks = ['💢', '🩹', '🤕'];
+                const markEl = document.createElement('div'); markEl.className = 'bruise-mark';
+                markEl.innerText = marks[Math.floor(Math.random() * marks.length)];
+                markEl.style.left = `${hitX}px`; markEl.style.top = `${hitY}px`;
+                ui.faceContainer.appendChild(markEl); setTimeout(() => markEl.remove(), 5000);
+
+                // Tears
                 if (Math.random() < 0.2) {
-                    const tearEl = document.createElement('div');
-                    tearEl.className = 'tear-drop';
-                    tearEl.innerText = '💧';
-                    tearEl.style.left = `${hitX + (Math.random()*20-10)}px`;
-                    tearEl.style.top = `${hitY + 15}px`;
-                    ui.faceContainer.appendChild(tearEl);
-                    setTimeout(() => tearEl.remove(), 1500);
+                    const tearEl = document.createElement('div'); tearEl.className = 'tear-drop'; tearEl.innerText = '💧';
+                    tearEl.style.left = `${hitX + (Math.random()*20-10)}px`; tearEl.style.top = `${hitY + 15}px`;
+                    ui.faceContainer.appendChild(tearEl); setTimeout(() => tearEl.remove(), 1500);
                 }
                 
-                // Shake physics
+                // Physics
                 ui.faceContainer.style.transform = `perspective(1000px) rotateX(${(Math.random()-0.5)*30}deg) rotateY(${(Math.random()-0.5)*30}deg) scale(0.9)`;
                 setTimeout(() => ui.faceContainer.style.transform = 'scale(1)', 100);
 
-                ui.body.classList.remove('shake-active', 'shake-heavy');
-                void ui.body.offsetWidth;
-                ui.body.classList.add(combo.feverActive ? 'shake-heavy' : 'shake-active');
+                ui.main.classList.remove('shake-active', 'shake-heavy'); void ui.main.offsetWidth;
+                ui.main.classList.add(combo.feverActive ? 'shake-heavy' : 'shake-active');
 
-                ui.hitFlash.style.opacity = '0.5';
-                setTimeout(() => ui.hitFlash.style.opacity = '0', 100);
+                ui.hitFlash.style.opacity = '0.5'; setTimeout(() => ui.hitFlash.style.opacity = '0', 100);
 
-                // Combo System Update
-                if (!combo.feverActive) {
-                    combo.current += 5; // +5 combo per manual hit
-                    combo.lastClickTime = Date.now();
-                    if (combo.current >= combo.max) {
-                        // Trigger Fever
-                        combo.feverActive = true;
-                        combo.feverTimer = combo.feverDuration;
-                    }
+                // Combo
+                if (!combo.feverActive && !quest.active) {
+                    combo.current += 5; combo.lastClickTime = Date.now();
+                    if (combo.current >= combo.max) { combo.feverActive = true; combo.feverTimer = combo.feverDuration; }
                 }
             }
 
-            createFloatingEffect(hitX, hitY, 'gold', finalDamage);
+            if(Math.random() > 0.3) createFloatingText(hitX, hitY, finalDamage, 'gold');
 
-            // Level Up Check
+            // Level Up
             if (state.exp >= state.maxExp) {
-                state.level++;
-                state.exp -= state.maxExp;
-                state.maxExp = Math.floor(state.maxExp * 1.5);
-                
-                // Check if new weapon unlocked
-                const newWeapon = weapons.find(w => w.reqLevel === state.level);
-                if(newWeapon) {
-                    // Auto equip
-                    state.currentWeaponId = newWeapon.id;
-                    renderWeapons();
-                    // Alert player non-intrusively
-                    const alertEl = document.createElement('div');
-                    alertEl.className = 'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center text-4xl title-font text-cyan-400 z-50 pointer-events-none drop-shadow-[0_5px_5px_rgba(0,0,0,1)]';
-                    alertEl.style.animation = 'floatDamage 2s forwards';
-                    alertEl.innerHTML = `레벨업!<br><span class="text-2xl text-yellow-300">${newWeapon.name} 획득!</span>`;
-                    ui.body.appendChild(alertEl);
-                    setTimeout(() => alertEl.remove(), 2000);
+                state.level++; state.exp -= state.maxExp; state.maxExp = Math.floor(state.maxExp * 1.5);
+                updateCostumes(); // Check costumes
+                // Check weapon unlock
+                const newWep = baseWeapons.find(w => w.reqLevel === state.level);
+                if(newWep) {
+                    state.currentWeaponId = newWep.id;
+                    alert(`레벨업! [${newWep.name}] 무기가 해금되었습니다.`);
                 }
             }
 
-            saveData(); // 타격(경험치, 골드 획득) 시마다 저장
-            updateUI();
+            if(!isAuto) { saveData(); renderUI(); }
         }
 
-        // --- Event Listeners ---
+        // Events
         ui.targetArea.addEventListener('touchstart', (e) => {
-            e.preventDefault(); // Prevent zoom/scroll
-            initAudio();
-            for(let i=0; i<e.changedTouches.length; i++) {
-                applyHit(false, e.changedTouches[i].clientX, e.changedTouches[i].clientY);
-            }
+            e.preventDefault(); initAudio();
+            for(let i=0; i<e.changedTouches.length; i++) applyHit(false, e.changedTouches[i].clientX, e.changedTouches[i].clientY);
         }, {passive: false});
+        ui.targetArea.addEventListener('mousedown', (e) => { initAudio(); applyHit(false, e.clientX, e.clientY); });
 
-        ui.targetArea.addEventListener('mousedown', (e) => {
-            initAudio();
-            applyHit(false, e.clientX, e.clientY);
-        });
-
-        // Tab Switching Logic
-        window.switchTab = function(tabId) {
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            
-            document.getElementById(`tabBtn-${tabId}`).classList.add('active');
-            document.getElementById(`tab-${tabId}`).classList.add('active');
-        };
-
-        // --- Game Loop (Auto Attack & Combo Decay) ---
+        // --- Game Loop (Auto Attack, Combo Decay, Feature 3 Quest) ---
         let lastTime = performance.now();
-        let autoAttackAccumulator = 0;
+        let autoAttackAccum = 0;
 
         function gameLoop(currentTime) {
-            const dt = (currentTime - lastTime) / 1000; // delta time in seconds
+            const dt = (currentTime - lastTime) / 1000;
             lastTime = currentTime;
 
-            // Handle Fever Timer & Combo Decay
+            // Combo Decay
             if (combo.feverActive) {
                 combo.feverTimer -= dt;
-                if (combo.feverTimer <= 0) {
-                    combo.feverActive = false;
-                    combo.current = 0; // Reset combo after fever
-                }
-                updateUI();
-            } else {
-                // Decay combo if inactive for 0.5s
+                if (combo.feverTimer <= 0) { combo.feverActive = false; combo.current = 0; renderUI(); }
+                else ui.comboBar.style.width = `${(combo.feverTimer / combo.feverDuration) * 100}%`;
+            } else if (!quest.active) {
                 if (Date.now() - combo.lastClickTime > 500 && combo.current > 0) {
-                    combo.current -= combo.decayRate * dt;
-                    if (combo.current < 0) combo.current = 0;
-                    updateUI();
+                    combo.current = Math.max(0, combo.current - combo.decayRate * dt);
+                    ui.comboBar.style.width = `${(combo.current / combo.max) * 100}%`;
                 }
             }
 
-            // Handle Auto Attacks (Spread over time for smooth visuals)
+            // Feature 3: Sudden Quest Logic
+            if (!quest.active) {
+                quest.nextQuestTimer -= dt;
+                if (quest.nextQuestTimer <= 0) {
+                    // Start Quest
+                    quest.active = true;
+                    quest.timer = quest.maxTime;
+                    quest.clicks = 0;
+                    document.getElementById('questModal').classList.remove('hidden');
+                    document.getElementById('questClickCount').innerText = `0 / ${quest.target}`;
+                }
+            } else {
+                quest.timer -= dt;
+                document.getElementById('questTimerBar').style.width = `${(quest.timer / quest.maxTime) * 100}%`;
+                
+                if (quest.clicks >= quest.target) {
+                    // Success
+                    const reward = 5000 * getMultiplier() * state.level;
+                    state.gold += reward;
+                    alert(`퀘스트 성공! 방어 보상으로 ${reward.toLocaleString()} 골드를 받았습니다!`);
+                    endQuest();
+                } else if (quest.timer <= 0) {
+                    // Fail
+                    const penalty = Math.floor(state.gold * 0.1);
+                    state.gold -= penalty;
+                    ui.body.classList.add('blur-active');
+                    setTimeout(() => ui.body.classList.remove('blur-active'), 5000);
+                    endQuest();
+                }
+            }
+
+            // Auto Attack processing
             if (state.autoPower > 0) {
-                // How many attacks should happen per frame based on autoPower (per sec)
-                autoAttackAccumulator += state.autoPower * dt;
-                while (autoAttackAccumulator >= 1) {
-                    // Temporarily set autoPower to 1 for calculation so it hits 1 by 1 visually
-                    const storedPower = state.autoPower;
-                    state.autoPower = 1; 
-                    applyHit(true); // true = isAuto
-                    state.autoPower = storedPower;
-                    autoAttackAccumulator -= 1;
+                autoAttackAccum += state.autoPower * dt;
+                if (autoAttackAccum >= 1) {
+                    let hitsToProcess = Math.floor(autoAttackAccum);
+                    autoAttackAccum -= hitsToProcess;
+                    // Cap visual hits to avoid lag
+                    hitsToProcess = Math.min(hitsToProcess, 10);
+                    while(hitsToProcess > 0) { applyHit(true); hitsToProcess--; }
+                    saveData(); renderUI();
                 }
             }
 
             requestAnimationFrame(gameLoop);
         }
 
-        // --- Initialization ---
-        loadData(); // 시작 시 저장된 데이터 불러오기
-        renderUpgrades();
-        renderWeapons();
-        updateUI();
-        requestAnimationFrame(gameLoop);
+        function endQuest() {
+            quest.active = false;
+            quest.nextQuestTimer = Math.random() * 30 + 30; // Next quest in 30~60s
+            document.getElementById('questModal').classList.add('hidden');
+            saveData(); renderUI();
+        }
 
+        // Init
+        loadData(); updateCostumes(); renderUI(); requestAnimationFrame(gameLoop);
     </script>
 </body>
 </html>
